@@ -4,8 +4,9 @@ name: Build self-host image
 # stats.wielandtech.com and pushes it to GHCR. Flux image-automation in the
 # homelab repo tracks the date-time-sha tag and bumps the Deployment.
 #
-# Uses GitHub-hosted runners (this is a public fork) rather than the homelab
-# runner scale sets, which only exist for other repos.
+# Runs on the homelab dind ARC runner scale set registered to this repo
+# (homelab-dind-readme-stats, defined in w_homelab
+# clusters/prod/infrastructure/github-runners/).
 
 on:
   push:
@@ -21,7 +22,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: homelab-dind-readme-stats
     permissions:
       contents: read
       packages: write
