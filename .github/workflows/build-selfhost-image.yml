@@ -51,7 +51,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/wielandtech/github-readme-stats
+          images: ghcr.io/wielandtech-labs/github-readme-stats
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=raw,value=${{ steps.vars.outputs.date }}-${{ steps.vars.outputs.time }}-${{ steps.vars.outputs.sha }},enable=${{ github.event_name == 'push' }}

@@ -17,7 +17,7 @@ instance does:
 
 The added `Dockerfile` containerizes that server (port `9000`), and
 `.github/workflows/build-selfhost-image.yml` builds + pushes it to
-`ghcr.io/wielandtech/github-readme-stats`. Flux image-automation in the homelab
+`ghcr.io/wielandtech-labs/github-readme-stats`. Flux image-automation in the homelab
 repo tracks the `YYYYMMDD-HHMMSS-<sha>` tag and rolls the Deployment.
 
 A GitHub PAT (classic, `public_repo` / read-only scope is enough) is supplied at
