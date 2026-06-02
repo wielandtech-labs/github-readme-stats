@@ -1,0 +1,66 @@
+name: Build self-host image
+
+# Builds the self-hosted github-readme-stats container that powers
+# stats.wielandtech.com and pushes it to GHCR. Flux image-automation in the
+# homelab repo tracks the date-time-sha tag and bumps the Deployment.
+#
+# Uses GitHub-hosted runners (this is a public fork) rather than the homelab
+# runner scale sets, which only exist for other repos.
+
+on:
+  push:
+    branches: [master]
+    # Don't rebuild on doc-only or upstream-sync churn that can't change the image.
+    paths-ignore:
+      - "**.md"
+      - "themes/**"
+      - "docs/**"
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set version vars
+        id: vars
+        run: |
+          echo "date=$(date +'%Y%m%d')" >> "$GITHUB_OUTPUT"
+          echo "time=$(date +'%H%M%S')" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/wielandtech/github-readme-stats
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ steps.vars.outputs.date }}-${{ steps.vars.outputs.time }}-${{ steps.vars.outputs.sha }},enable=${{ github.event_name == 'push' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
