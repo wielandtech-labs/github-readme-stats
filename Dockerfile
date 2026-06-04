@@ -12,8 +12,10 @@ WORKDIR /app
 # express is a *devDependency* upstream, so a production-only install would omit
 # it and the server would not start — install the full dependency set.
 # --ignore-scripts skips the husky "prepare" hook (needs git, not wanted in the image).
+# Cache npm downloads on the shared buildkitd PVC so they persist across runs.
 COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --ignore-scripts
 
 COPY . .
 
