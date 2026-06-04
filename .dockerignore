@@ -1,0 +1,10 @@
+.git
+.github
+node_modules
+coverage
+docs
+tests
+*.test.js
+.husky
+.vercel
+npm-debug.log
