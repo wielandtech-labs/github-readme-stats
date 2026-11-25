@@ -5,7 +5,7 @@
 #   GET /api/top-langs  -> top languages card
 # We just containerize that server. A GitHub PAT is supplied at runtime via the
 # PAT_1 env var (see the homelab sealed secret).
-FROM node:22-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
